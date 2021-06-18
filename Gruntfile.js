@@ -45,8 +45,7 @@ module.exports = function (grunt) {
         performance: ['test/performance/*_test.js'],
       },
       validator: {
-        //dev: 'https://unpkg.com/ical.js', // master builds don't currently have ical.js committed. See #405
-        dev: 'https://unpkg.com/ical.js@<%= pkg.version %>/build/ical.js',
+        dev: 'https://unpkg.com/ical.js', // master builds don't currently have ical.js committed. See #405
         prod: 'https://unpkg.com/ical.js@<%= pkg.version %>/build/ical.js',
         dest: 'validator.html',
       },
@@ -170,7 +169,7 @@ module.exports = function (grunt) {
         ],
       },
       ci: {
-        exitOnFailure: false,
+        exitOnFailure: true,
         customLaunchers: pkg.saucelabs,
         browsers: Object.keys(pkg.saucelabs),
         reporters: ['saucelabs', 'spec'],

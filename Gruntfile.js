@@ -2,7 +2,7 @@
 
 var path = require('path');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   function loadOptionalTask(name) {
     var root = path.resolve('node_modules');
     var tasksdir = path.join(root, name, 'tasks');
@@ -18,49 +18,67 @@ module.exports = function(grunt) {
       cwd: 'lib/ical',
       doc: 'api',
       files: [
-        'helpers.js', 'design.js', 'stringify.js', 'parse.js', 'component.js',
-        'property.js', 'utc_offset.js', 'binary.js', 'period.js', 'duration.js',
-        'timezone.js', 'timezone_service.js', 'time.js', 'vcard_time.js',
-        'recur.js', 'recur_iterator.js', 'recur_expansion.js', 'event.js',
-        'component_parser.js'
+        'helpers.js',
+        'design.js',
+        'stringify.js',
+        'parse.js',
+        'component.js',
+        'property.js',
+        'utc_offset.js',
+        'binary.js',
+        'period.js',
+        'duration.js',
+        'timezone.js',
+        'timezone_service.js',
+        'time.js',
+        'vcard_time.js',
+        'recur.js',
+        'recur_iterator.js',
+        'recur_expansion.js',
+        'event.js',
+        'component_parser.js',
       ],
       test: {
         head: ['test/helper.js'],
         unit: ['test/*_test.js'],
         acceptance: ['test/acceptance/*_test.js'],
-        performance: ['test/performance/*_test.js']
+        performance: ['test/performance/*_test.js'],
       },
       validator: {
-        dev: 'https://unpkg.com/ical.js', // master builds don't currently have ical.js committed. See #405
+        //dev: 'https://unpkg.com/ical.js', // master builds don't currently have ical.js committed. See #405
+        dev: 'https://unpkg.com/ical.js@<%= pkg.version %>/build/ical.js',
         prod: 'https://unpkg.com/ical.js@<%= pkg.version %>/build/ical.js',
-        dest: 'validator.html'
-      }
+        dest: 'validator.html',
+      },
     },
 
     concat: {
       options: {
-        separator: ''
+        separator: '',
       },
 
       dist: {
         options: {
-          process: function(src, filepath) {
+          process: function (src, filepath) {
             return src.replace('"use strict";', '');
-          }
+          },
         },
         src: ['<%= libinfo.absfiles %>'],
-        dest: 'build/ical.js'
+        dest: 'build/ical.js',
       },
 
       validator: {
         options: {
-          process: function(src, filepath) {
-            return src.replace(grunt.config('libinfo.validator.dev'), grunt.config('libinfo.validator.prod'));
-          }
+          process: function (src, filepath) {
+            return src.replace(
+              grunt.config('libinfo.validator.dev'),
+              grunt.config('libinfo.validator.prod')
+            );
+          },
         },
         src: ['sandbox/validator.html'],
-        dest: '<%= libinfo.validator.dest %>'
-      }
+        dest: '<%= libinfo.validator.dest %>',
+      },
     },
 
     mocha_istanbul: {
@@ -70,35 +88,40 @@ module.exports = function(grunt) {
           root: './lib/ical/',
           require: ['<%= libinfo.test.head %>'],
           reporter: 'dot',
-          ui: 'tdd'
-        }
-      }
+          ui: 'tdd',
+        },
+      },
     },
 
     coveralls: {
       options: {
-        force: true
+        force: true,
       },
       unit: {
-        src: './coverage/lcov.info'
-      }
+        src: './coverage/lcov.info',
+      },
     },
 
     'node-inspector': {
       test: {
-        hidden: ['node_modules']
-      }
+        hidden: ['node_modules'],
+      },
     },
 
     concurrent: {
-      all: ['mochacli:performance', 'mochacli:acceptance', 'mochacli:unit', 'node-inspector'],
+      all: [
+        'mochacli:performance',
+        'mochacli:acceptance',
+        'mochacli:unit',
+        'node-inspector',
+      ],
       unit: ['mochacli:unit', 'node-inspector'],
       acceptance: ['mochacli:acceptance', 'node-inspector'],
-      single: ['mochacli:single', 'node-inspector']
+      single: ['mochacli:single', 'node-inspector'],
     },
 
     eslint: {
-      src: ['<%= libinfo.absfiles %>']
+      src: ['<%= libinfo.absfiles %>'],
     },
 
     mochacli: {
@@ -106,20 +129,20 @@ module.exports = function(grunt) {
         ui: 'tdd',
         require: ['<%= libinfo.test.head %>'],
         'debug-brk': grunt.option('debug'),
-        reporter: grunt.option('reporter') || 'spec'
+        reporter: grunt.option('reporter') || 'spec',
       },
       performance: {
-        src: ['<%= libinfo.test.performance %>']
+        src: ['<%= libinfo.test.performance %>'],
       },
       acceptance: {
-        src: ['<%= libinfo.test.acceptance %>']
+        src: ['<%= libinfo.test.acceptance %>'],
       },
       unit: {
-        src: ['<%= libinfo.test.unit %>']
+        src: ['<%= libinfo.test.unit %>'],
       },
       single: {
-        src: [grunt.option('test')]
-      }
+        src: [grunt.option('test')],
+      },
     },
 
     karma: {
@@ -136,15 +159,15 @@ module.exports = function(grunt) {
         frameworks: ['mocha', 'chai'],
         client: {
           mocha: {
-            ui: 'tdd'
-          }
+            ui: 'tdd',
+          },
         },
         files: [
           { pattern: 'samples/**/*.ics', included: false },
           { pattern: 'test/parser/*', included: false },
           '<%= libinfo.relfiles %>',
-          '<%= libinfo.test.head %>'
-        ]
+          '<%= libinfo.test.head %>',
+        ],
       },
       ci: {
         exitOnFailure: false,
@@ -153,34 +176,34 @@ module.exports = function(grunt) {
         reporters: ['saucelabs', 'spec'],
         sauceLabs: {
           testName: 'ICAL.js',
-          startConnect: true
+          startConnect: true,
         },
 
         files: {
-          src: ['<%= libinfo.test.unit %>']
-        }
+          src: ['<%= libinfo.test.unit %>'],
+        },
       },
       single: {
         singleRun: !grunt.option('debug'),
         reporters: ['spec'],
         files: {
-          src: [grunt.option('test')]
-        }
+          src: [grunt.option('test')],
+        },
       },
       unit: {
         singleRun: !grunt.option('debug'),
         reporters: ['spec'],
         files: {
-          src: ['<%= libinfo.test.unit %>']
-        }
+          src: ['<%= libinfo.test.unit %>'],
+        },
       },
       acceptance: {
         singleRun: !grunt.option('debug'),
         reporters: ['spec'],
         files: {
-          src: ['<%= libinfo.test.acceptance %>']
-        }
-      }
+          src: ['<%= libinfo.test.acceptance %>'],
+        },
+      },
     },
 
     uglify: {
@@ -188,14 +211,14 @@ module.exports = function(grunt) {
         sourceMap: true,
         compress: {},
         mangle: {
-          reserved: ['ICAL']
-        }
+          reserved: ['ICAL'],
+        },
       },
       dist: {
         files: {
-          'build/ical.min.js': ['build/ical.js']
-        }
-      }
+          'build/ical.min.js': ['build/ical.js'],
+        },
+      },
     },
     release: {
       options: {
@@ -204,9 +227,9 @@ module.exports = function(grunt) {
         additionalFiles: ['bower.json'],
         github: {
           repo: 'mozilla-comm/ical.js',
-          accessTokenVar: 'GITHUB_TOKEN'
-        }
-      }
+          accessTokenVar: 'GITHUB_TOKEN',
+        },
+      },
     },
     jsdoc: {
       dist: {
@@ -214,9 +237,9 @@ module.exports = function(grunt) {
         options: {
           destination: '<%= libinfo.doc %>',
           template: './node_modules/minami/',
-          private: false
-        }
-      }
+          private: false,
+        },
+      },
     },
 
     'gh-pages': {
@@ -225,21 +248,28 @@ module.exports = function(grunt) {
         only: '<%= libinfo.doc %>',
         user: {
           name: 'Travis CI',
-          email: 'builds@travis-ci.org'
+          email: 'builds@travis-ci.org',
         },
         repo: 'git@github.com:mozilla-comm/ical.js.git',
-        message: 'Update API documentation and validator for <%= travis.commit %>'
+        message:
+          'Update API documentation and validator for <%= travis.commit %>',
       },
-      src: ['<%= libinfo.doc %>/**', '<%= libinfo.validator.dest %>']
-    }
+      src: ['<%= libinfo.doc %>/**', '<%= libinfo.validator.dest %>'],
+    },
   });
 
-  grunt.config.set('libinfo.absfiles', grunt.config.get('libinfo.files').map(function(f) {
-    return path.join(grunt.config.get('libinfo.cwd'), f);
-  }));
-  grunt.config.set('libinfo.relfiles', grunt.config.get('libinfo.files').map(function(f) {
-    return path.join("lib", "ical", f);
-  }));
+  grunt.config.set(
+    'libinfo.absfiles',
+    grunt.config.get('libinfo.files').map(function (f) {
+      return path.join(grunt.config.get('libinfo.cwd'), f);
+    })
+  );
+  grunt.config.set(
+    'libinfo.relfiles',
+    grunt.config.get('libinfo.files').map(function (f) {
+      return path.join('lib', 'ical', f);
+    })
+  );
 
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -264,10 +294,23 @@ module.exports = function(grunt) {
   grunt.registerTask('test-browser', ['karma:unit', 'karma:acceptance']);
   grunt.registerTask('test', ['test-browser', 'test-node']);
 
-  grunt.registerTask('ghpages-ci', ['jsdoc', 'concat:validator', 'run-on-master-leader:run-with-env:GITHUB_SSH_KEY:gh-pages']);
-  grunt.registerTask('unit-ci', ['test-node:unit', 'test-node:acceptance', 'run-on-master-leader:karma:ci']);
+  grunt.registerTask('ghpages-ci', [
+    'jsdoc',
+    'concat:validator',
+    'run-on-master-leader:run-with-env:GITHUB_SSH_KEY:gh-pages',
+  ]);
+  grunt.registerTask('unit-ci', [
+    'test-node:unit',
+    'test-node:acceptance',
+    'run-on-master-leader:karma:ci',
+  ]);
   grunt.registerTask('coverage-ci', ['coverage', 'coveralls']);
-  grunt.registerTask('test-ci', ['linters', 'unit-ci', 'coverage-ci', 'ghpages-ci']);
+  grunt.registerTask('test-ci', [
+    'linters',
+    'unit-ci',
+    'coverage-ci',
+    'ghpages-ci',
+  ]);
 
   // Additional tasks:
   //   - tests.js: performance-update, test-node
